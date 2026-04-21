@@ -24,7 +24,7 @@
   "applicationCategory": "LifestyleApplication",
   "offers": {
     "@type": "Offer",
-    "price": "19.00",
+    "price": "2.00",
     "priceCurrency": "USD"
   }
 }
@@ -973,8 +973,8 @@ footer a { color: var(--ink-soft); text-decoration: none; margin: 0 12px; }
       </ul>
       <div class="upsell-footer">
         <div class="price-tag">
-          <span class="price-current">$19</span>
-          <span class="price-original">$39</span>
+          <span class="price-current">$2</span>
+          <span class="price-original">$5</span>
         </div>
         <a class="btn-buy gumroad-button" 
           href="https://tylerobrien0.gumroad.com/l/avfxsh?wanted=true"
@@ -1562,7 +1562,7 @@ async function submitEmail(e) {
 // Gumroad checkout — redirect to hosted checkout with season metadata
 function goToCheckout() {
   const season = window.__currentSeason || 'Deep Autumn';
-  trackEvent('InitiateCheckout', { season, value: 19, currency: 'USD' });
+  trackEvent('InitiateCheckout', { season, value: 2, currency: 'USD' });
 
   // Gumroad supports query params for tracking. The "wanted=true" skips the product page.
   // You can also use custom fields to pass the season to the fulfillment email.
@@ -1582,7 +1582,7 @@ function handlePostPurchase() {
     renderFullReport(season);
     document.getElementById('purchase-banner').style.display = 'block';
     showScreen('report');
-    trackEvent('Purchase', { season, value: 19, currency: 'USD' });
+    trackEvent('Purchase', { season, value: 2, currency: 'USD' });
   }
 }
 
