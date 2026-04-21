@@ -1469,9 +1469,12 @@ function showResult(seasonName) {
     .map(([hex, name]) => `<div class="preview-swatch" style="background: ${hex};">${name}<br>${hex}</div>`).join('');
 
   // Reset email form state
-  document.getElementById('email-form').style.display = 'flex';
-  document.getElementById('email-success').style.display = 'none';
-  document.getElementById('email-button').disabled = false;
+  const emailForm = document.getElementById('email-form');
+  const emailSuccess = document.getElementById('email-success');
+  const emailButton = document.getElementById('email-button');
+  if (emailForm) emailForm.style.display = 'flex';
+  if (emailSuccess) emailSuccess.style.display = 'none';
+  if (emailButton) emailButton.disabled = false;
 
   showScreen('result');
 }
