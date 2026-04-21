@@ -981,19 +981,6 @@ footer a { color: var(--ink-soft); text-decoration: none; margin: 0 12px; }
       </div>
     </div>
 
-    <div class="email-capture">
-      <h4>Not ready? Get a free summary by email.</h4>
-      <p>We'll send your season overview plus 5 free style tips. No spam.</p>
-      <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
-      <iframe src="https://subscribe-forms.beehiiv.com/db236075-ea06-4a83-9e96-064b13954dd2" 
-              class="beehiiv-embed" 
-              data-test-id="beehiiv-embed" 
-              frameborder="0" 
-              scrolling="no" 
-              style="width: 439px; height: 291px; margin: 0; border-radius: 0px 0px 0px 0px !important; background-color: transparent; box-shadow: 0 0 #0000; max-width: 100%;">
-      </iframe>
-      <div id="email-success" class="email-success" style="display:none;">
-        ✓ You're in. Check your inbox in a minute.
       </div>
     </div>
   </div>
@@ -1064,10 +1051,6 @@ footer a { color: var(--ink-soft); text-decoration: none; margin: 0 12px; }
    CONFIG — replace these values when you're ready to go live.
    ===================================================================== */
 const CONFIG = {
-  // Beehiiv API — create a free account at beehiiv.com, find API key in Settings > Integrations > API
-  BEEHIIV_PUBLICATION_ID: 'pub_YOUR_PUBLICATION_ID',   // looks like pub_xxxxxxxxxxxx
-  BEEHIIV_API_KEY: 'YOUR_BEEHIIV_API_KEY',              // keep this out of client-side code in production!
-
   // Gumroad checkout URL — create a product at gumroad.com, paste the permalink here
   // Example: 'https://gumroad.com/l/colorscope-report?variant=...'
   GUMROAD_CHECKOUT_URL: 'https://tylerobrien0.gumroad.com/l/avfxsh',
@@ -1467,14 +1450,6 @@ function showResult(seasonName) {
   document.getElementById('result-tagline').textContent = s.tagline;
   document.getElementById('palette-preview').innerHTML = s.preview
     .map(([hex, name]) => `<div class="preview-swatch" style="background: ${hex};">${name}<br>${hex}</div>`).join('');
-
-  // Reset email form state
-  const emailForm = document.getElementById('email-form');
-  const emailSuccess = document.getElementById('email-success');
-  const emailButton = document.getElementById('email-button');
-  if (emailForm) emailForm.style.display = 'flex';
-  if (emailSuccess) emailSuccess.style.display = 'none';
-  if (emailButton) emailButton.disabled = false;
 
   showScreen('result');
 }
