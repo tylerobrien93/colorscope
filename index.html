@@ -1448,7 +1448,8 @@ function showResult(seasonName) {
   const s = SEASONS[seasonName];
   if (!s) return;
   window.__currentSeason = seasonName;
-
+  try { localStorage.setItem('colorscope_season', seasonName); } catch(e) {}
+  
   document.getElementById('result-title').textContent = seasonName;
   document.getElementById('result-tagline').textContent = s.tagline;
   document.getElementById('palette-preview').innerHTML = s.preview
@@ -1577,12 +1578,19 @@ function goToCheckout() {
 function handlePostPurchase() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('purchase') === 'success') {
-    const season = params.get('season') || 'Deep Autumn';
+    // Try URL first, then localStorage, then fall back to Deep Autumn
+    let season = params.get('season');
+    if (!season) {
+      try { season = localStorage.getItem('colorscope_season'); } catch(e) {}
+    }
+    if (!season || !SEASONS[season]) season = 'Deep Autumn';
+
     window.__currentSeason = season;
     renderFullReport(season);
-    document.getElementById('purchase-banner').style.display = 'block';
+    const banner = document.getElementById('purchase-banner');
+    if (banner) banner.style.display = 'block';
     showScreen('report');
-    trackEvent('Purchase', { season, value: 2, currency: 'USD' });
+    trackEvent('Purchase', { season, value: 19, currency: 'USD' });
   }
 }
 
