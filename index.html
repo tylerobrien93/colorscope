@@ -1609,28 +1609,32 @@ function handlePostPurchase() {
 function trackEvent(name, params = {}) {
   console.log('[track]', name, params);
 
-  // TikTok event name mapping — TikTok requires specific standard event names
-  // for optimization to work. Custom names get treated as low-value events.
+  // 2026 TikTok standard event mapping
+  // Maps internal event names to TikTok's current standard events
   const ttEventMap = {
-    'QuizStarted': 'ClickButton',           // entry-point engagement
-    'QuizCompleted': 'CompleteRegistration', // high-value lead signal
+    'PageView': 'ViewContent',              // Landing page = ViewContent
+    'QuizStarted': 'AddToCart',             // Quiz start = funnel step 2
+    'QuizCompleted': 'InitiateCheckout',    // Quiz finish = funnel step 3 (high-value lead)
     'EmailCaptured': 'Subscribe',
     'InitiateCheckout': 'InitiateCheckout',
-    'Purchase': 'CompletePayment'
+    'Purchase': 'Purchase'                  // Updated from CompletePayment
   };
 
   if (window.ttq && CONFIG.TIKTOK_PIXEL_ID) {
     const ttName = ttEventMap[name] || name;
-    // Add value + currency for purchase events so TikTok can optimize for ROAS
     const ttParams = { ...params };
-    if (name === 'Purchase' || name === 'InitiateCheckout') {
-      ttParams.value = params.value || 19;
+
+    // Required commerce parameters for funnel events
+    if (['Purchase', 'InitiateCheckout', 'AddToCart', 'ViewContent'].includes(ttName)) {
+      ttParams.value = params.value || (ttName === 'Purchase' ? 2 : 0);
       ttParams.currency = params.currency || 'USD';
+      ttParams.content_type = 'product';
+      ttParams.content_id = params.content_id || 'colorscope-report';
     }
+
     window.ttq.track(ttName, ttParams);
   }
 
-  // Meta pixel — fires same events if you set up Meta later
   if (window.fbq && CONFIG.META_PIXEL_ID) {
     window.fbq('track', name, params);
   }
