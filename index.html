@@ -986,9 +986,7 @@ footer a { color: var(--ink-soft); text-decoration: none; margin: 0 12px; }
           <span class="price-current">$2</span>
           <span class="price-original">$5</span>
         </div>
-        <a class="btn-buy gumroad-button" 
-          href="https://tylerobrien0.gumroad.com/l/avfxsh?wanted=true"
-          data-gumroad-single-product="true">
+        <a class="btn-buy" href="#" onclick="goToCheckout(event); return false;">Get my full report →</a>
         Get my full report →
       </a>
       </div>
@@ -1571,19 +1569,22 @@ async function submitEmail(e) {
 }
 
 // Gumroad checkout — redirect to hosted checkout with season metadata
-function goToCheckout() {
+function goToCheckout(event) {
+  if (event) event.preventDefault();
   const season = window.__currentSeason || 'Deep Autumn';
-  trackEvent('InitiateCheckout', { season, value: 2, currency: 'USD' });
 
-  // Gumroad supports query params for tracking. The "wanted=true" skips the product page.
-  // You can also use custom fields to pass the season to the fulfillment email.
+  // Fire tracking event first
+  trackEvent('InitiateCheckout', { season, value: 19, currency: 'USD' });
+
+  // Build the Gumroad URL
   const url = `${CONFIG.GUMROAD_CHECKOUT_URL}?wanted=true&season=${encodeURIComponent(season)}`;
 
-  // Note: in production, the thank-you / redirect URL from Gumroad should bring the user
-  // back to your site with ?purchase=success&season=XYZ so you can render the full report.
-  window.location.href = url;
+  // Wait 350ms so the pixel can fire to TikTok's servers before we redirect.
+  // This is critical — without it, the tracking call gets cancelled mid-flight.
+  setTimeout(() => {
+    window.location.href = url;
+  }, 350);
 }
-
 // Post-purchase handler — checks URL for ?purchase=success
 function handlePostPurchase() {
   const params = new URLSearchParams(window.location.search);
