@@ -1607,8 +1607,32 @@ function handlePostPurchase() {
 // Pixel tracking — stubs for Meta and TikTok
 function trackEvent(name, params = {}) {
   console.log('[track]', name, params);
-  if (window.fbq && CONFIG.META_PIXEL_ID) window.fbq('track', name, params);
-  if (window.ttq && CONFIG.TIKTOK_PIXEL_ID) window.ttq.track(name, params);
+
+  // TikTok event name mapping — TikTok requires specific standard event names
+  // for optimization to work. Custom names get treated as low-value events.
+  const ttEventMap = {
+    'QuizStarted': 'ClickButton',           // entry-point engagement
+    'QuizCompleted': 'CompleteRegistration', // high-value lead signal
+    'EmailCaptured': 'Subscribe',
+    'InitiateCheckout': 'InitiateCheckout',
+    'Purchase': 'CompletePayment'
+  };
+
+  if (window.ttq && CONFIG.TIKTOK_PIXEL_ID) {
+    const ttName = ttEventMap[name] || name;
+    // Add value + currency for purchase events so TikTok can optimize for ROAS
+    const ttParams = { ...params };
+    if (name === 'Purchase' || name === 'InitiateCheckout') {
+      ttParams.value = params.value || 19;
+      ttParams.currency = params.currency || 'USD';
+    }
+    window.ttq.track(ttName, ttParams);
+  }
+
+  // Meta pixel — fires same events if you set up Meta later
+  if (window.fbq && CONFIG.META_PIXEL_ID) {
+    window.fbq('track', name, params);
+  }
 }
 
 // ========== INIT ==========
