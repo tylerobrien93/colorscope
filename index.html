@@ -1610,22 +1610,21 @@ function trackEvent(name, params = {}) {
   console.log('[track]', name, params);
 
   // 2026 TikTok standard event mapping
-  // Maps internal event names to TikTok's current standard events
   const ttEventMap = {
-    'PageView': 'ViewContent',              // Landing page = ViewContent
-    'QuizStarted': 'AddToCart',             // Quiz start = funnel step 2
-    'QuizCompleted': 'InitiateCheckout',    // Quiz finish = funnel step 3 (high-value lead)
+    'PageView': 'ViewContent',
+    'QuizStarted': 'AddToCart',
+    'QuizCompleted': 'CompleteRegistration',  // Updated: TikTok wants this for Conversion optimization
     'EmailCaptured': 'Subscribe',
     'InitiateCheckout': 'InitiateCheckout',
-    'Purchase': 'Purchase'                  // Updated from CompletePayment
+    'Purchase': 'Purchase'
   };
 
   if (window.ttq && CONFIG.TIKTOK_PIXEL_ID) {
     const ttName = ttEventMap[name] || name;
     const ttParams = { ...params };
 
-    // Required commerce parameters for funnel events
-    if (['Purchase', 'InitiateCheckout', 'AddToCart', 'ViewContent'].includes(ttName)) {
+    // Required commerce parameters
+    if (['Purchase', 'InitiateCheckout', 'AddToCart', 'ViewContent', 'CompleteRegistration'].includes(ttName)) {
       ttParams.value = params.value || (ttName === 'Purchase' ? 2 : 0);
       ttParams.currency = params.currency || 'USD';
       ttParams.content_type = 'product';
@@ -1633,13 +1632,17 @@ function trackEvent(name, params = {}) {
     }
 
     window.ttq.track(ttName, ttParams);
+
+    // Also fire InitiateCheckout when quiz completes — gives TikTok richer funnel signal
+    if (name === 'QuizCompleted') {
+      window.ttq.track('InitiateCheckout', ttParams);
+    }
   }
 
   if (window.fbq && CONFIG.META_PIXEL_ID) {
     window.fbq('track', name, params);
   }
 }
-
 // ========== INIT ==========
 renderFullReport('Deep Autumn'); // pre-render for nav preview
 handlePostPurchase();
